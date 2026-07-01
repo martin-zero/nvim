@@ -1,0 +1,13 @@
+local lang = require "configs.lang"
+
+local options = {
+  formatters_by_ft = lang.formatters_by_ft,
+
+  format_on_save = {
+    -- These options will be passed to conform.format()
+    timeout_ms = 500,
+    lsp_fallback = true,
+  },
+}
+
+return options
