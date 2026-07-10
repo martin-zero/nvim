@@ -1,6 +1,5 @@
 --代码大纲
 return {
-  --代码大纲
   {
     "stevearc/aerial.nvim",
     dependencies = {

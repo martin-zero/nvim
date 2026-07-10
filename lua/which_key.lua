@@ -1,5 +1,16 @@
 local wk = require "which-key"
 
+wk.add {
+  { "<leader>c", group = "代码" },
+  { "<leader>d", group = "诊断/调试" },
+  { "<leader>f", group = "查找" },
+  { "<leader>g", group = "Git" },
+  { "<leader>m", group = "标记" },
+  { "<leader>r", group = "重构/工作区" },
+  { "<leader>t", group = "主题/工具" },
+  { "<leader>w", group = "工作区/快捷键" },
+}
+
 local function map_exists(mode, lhs)
   return not vim.tbl_isempty(vim.fn.maparg(lhs, mode, false, true))
 end
@@ -64,10 +75,14 @@ vim.api.nvim_create_autocmd("LspAttach", {
       remap_lsp("gD", "跳转到声明")
       remap_lsp("gd", "跳转到定义")
       remap_lsp("<leader>D", "跳转到类型定义")
-      remap_lsp("<leader>ra", "重命名")
       remap_lsp("<leader>wa", "添加工作区文件夹")
       remap_lsp("<leader>wr", "移除工作区文件夹")
       remap_lsp("<leader>wl", "列出工作区文件夹")
+
+      vim.keymap.set("n", "<leader>ra", vim.lsp.buf.rename, {
+        buffer = args.buf,
+        desc = "重命名",
+      })
     end)
   end,
 })

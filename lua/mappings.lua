@@ -71,6 +71,7 @@ local chinese_desc = {
     ["<leader>n"] = "切换行号",
     ["<leader>rn"] = "切换相对行号",
     ["<leader>ch"] = "打开快捷键速查",
+    ["<leader>cs"] = "切换头文件/源文件",
     ["<leader>fm"] = "格式化文件",
     ["<leader>ds"] = "诊断列表",
     ["<leader>b"] = "新建缓冲区",
@@ -88,12 +89,9 @@ local chinese_desc = {
     ["<leader>fz"] = "在当前缓冲区搜索",
     ["<leader>cm"] = "查找 Git 提交",
     ["<leader>gt"] = "查看 Git 状态",
-    ["<leader>pt"] = "选择隐藏终端",
     ["<leader>th"] = "切换主题",
     ["<leader>ff"] = "查找文件",
     ["<leader>fa"] = "查找所有文件",
-    ["<leader>h"] = "新建水平终端",
-    ["<leader>v"] = "新建垂直终端",
     ["<A-v>"] = "切换垂直终端",
     ["<A-h>"] = "切换水平终端",
     ["<A-i>"] = "切换浮动终端",
@@ -120,11 +118,25 @@ for mode, mappings in pairs(chinese_desc) do
   end
 end
 
+pcall(vim.keymap.del, "n", "<leader>pt")
+pcall(vim.keymap.del, "n", "<leader>h")
+pcall(vim.keymap.del, "n", "<leader>v")
+
 -- map({ "n", "i", "v" }, "<C-s>", "<cmd> w <cr>")
 
 -- 快速修复
 map("n", "<leader>ca", vim.lsp.buf.code_action, {
   desc = "代码操作",
+})
+
+map("n", "<leader>cs", function()
+  if vim.fn.exists ":LspClangdSwitchSourceHeader" == 2 then
+    vim.cmd "LspClangdSwitchSourceHeader"
+  else
+    vim.notify("clangd 未提供头文件/源文件切换命令", vim.log.levels.WARN)
+  end
+end, {
+  desc = "切换头文件/源文件",
 })
 
 map("n", "<S-l>", ":bnext<CR>", { silent = true })

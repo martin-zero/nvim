@@ -1,5 +1,5 @@
 local enabled = {
-  "web",
+  -- "web",
   "cpp",
   "csharp",
   "java",

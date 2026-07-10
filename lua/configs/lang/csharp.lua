@@ -1,6 +1,6 @@
 return {
   servers = {
-    "omnisharp",
+    "csharp_ls",
   },
 
   formatters_by_ft = {
@@ -8,7 +8,6 @@ return {
   },
 
   mason = {
-    "omnisharp",
     "csharpier",
     "netcoredbg",
   },

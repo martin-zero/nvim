@@ -1,5 +1,5 @@
+-- AI代码补全
 return {
-  -- AI代码补全
   {
     "monkoose/neocodeium",
     event = "VeryLazy",
