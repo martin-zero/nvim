@@ -19,3 +19,4 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 vim.opt.clipboard = "unnamedplus"
+vim.o.scrolloff = 8

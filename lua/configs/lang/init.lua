@@ -5,6 +5,7 @@ local enabled = {
   "java",
   "lua",
   "rust",
+  "copilot",
 }
 
 local M = {

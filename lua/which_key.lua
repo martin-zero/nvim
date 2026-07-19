@@ -1,37 +1,20 @@
 local wk = require "which-key"
 
-wk.add {
-  { "<leader>c", group = "代码" },
-  { "<leader>d", group = "诊断/调试" },
-  { "<leader>f", group = "查找" },
+local leader_groups = {
+  { "<leader>a", group = "AI 助手" },
+  { "<leader>c", group = "代码操作" },
+  { "<leader>d", group = "调试/诊断" },
+  { "<leader>f", group = "文件/搜索" },
   { "<leader>g", group = "Git" },
+  { "<leader>h", group = "帮助" },
   { "<leader>m", group = "标记" },
-  { "<leader>r", group = "重构/工作区" },
-  { "<leader>t", group = "主题/工具" },
-  { "<leader>w", group = "工作区/快捷键" },
+  { "<leader>o", group = "代码大纲" },
+  { "<leader>r", group = "重构" },
+  { "<leader>u", group = "界面" },
+  { "<leader>w", group = "工作区" },
 }
 
-local function map_exists(mode, lhs)
-  return not vim.tbl_isempty(vim.fn.maparg(lhs, mode, false, true))
-end
-
-local function add_if_exists(items)
-  local available = {}
-
-  for _, item in ipairs(items) do
-    local mode = item.mode or "n"
-
-    if map_exists(mode, item[1]) then
-      table.insert(available, item)
-    end
-  end
-
-  if #available > 0 then
-    wk.add(available)
-  end
-end
-
-add_if_exists {
+local lsp_keymaps = {
   { "gD", desc = "跳转到声明" },
   { "gd", desc = "跳转到定义" },
   { "grd", desc = "查找定义" },
@@ -45,39 +28,58 @@ add_if_exists {
   { "<leader>wl", desc = "列出工作区文件夹" },
 }
 
+local function normal_map_exists(lhs)
+  return not vim.tbl_isempty(vim.fn.maparg(lhs, "n", false, true))
+end
+
+local function add_existing_normal_maps(items)
+  local existing = {}
+
+  for _, item in ipairs(items) do
+    if normal_map_exists(item[1]) then
+      table.insert(existing, item)
+    end
+  end
+
+  if #existing > 0 then
+    wk.add(existing)
+  end
+end
+
+local function find_buffer_normal_map(bufnr, lhs)
+  for _, item in ipairs(vim.api.nvim_buf_get_keymap(bufnr, "n")) do
+    if item.lhs == lhs then
+      return item
+    end
+  end
+end
+
+local function set_buffer_map_desc(bufnr, lhs, desc)
+  local mapping = find_buffer_normal_map(bufnr, lhs)
+
+  if not mapping then
+    return
+  end
+
+  vim.keymap.set("n", lhs, mapping.callback or mapping.rhs, {
+    buffer = bufnr,
+    desc = desc,
+    remap = mapping.noremap == 0,
+    silent = mapping.silent == 1,
+    expr = mapping.expr == 1,
+    nowait = mapping.nowait == 1,
+  })
+end
+
+wk.add(leader_groups)
+add_existing_normal_maps(lsp_keymaps)
+
 vim.api.nvim_create_autocmd("LspAttach", {
   callback = function(args)
     vim.schedule(function()
-      local function remap_lsp(lhs, desc)
-        local mapping
-
-        for _, item in ipairs(vim.api.nvim_buf_get_keymap(args.buf, "n")) do
-          if item.lhs == lhs then
-            mapping = item
-            break
-          end
-        end
-
-        if not mapping then
-          return
-        end
-
-        vim.keymap.set("n", lhs, mapping.callback or mapping.rhs, {
-          buffer = args.buf,
-          desc = desc,
-          remap = mapping.noremap == 0,
-          silent = mapping.silent == 1,
-          expr = mapping.expr == 1,
-          nowait = mapping.nowait == 1,
-        })
+      for _, item in ipairs(lsp_keymaps) do
+        set_buffer_map_desc(args.buf, item[1], item.desc)
       end
-
-      remap_lsp("gD", "跳转到声明")
-      remap_lsp("gd", "跳转到定义")
-      remap_lsp("<leader>D", "跳转到类型定义")
-      remap_lsp("<leader>wa", "添加工作区文件夹")
-      remap_lsp("<leader>wr", "移除工作区文件夹")
-      remap_lsp("<leader>wl", "列出工作区文件夹")
 
       vim.keymap.set("n", "<leader>ra", vim.lsp.buf.rename, {
         buffer = args.buf,

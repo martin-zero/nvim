@@ -16,7 +16,7 @@ return {
 
     keys = {
       {
-        "<leader>a",
+        "<leader>o",
         "<cmd>AerialToggle!<CR>",
         desc = "切换代码大纲",
       },
