@@ -11,6 +11,15 @@ return {
   mason = {
     "clangd",
     "clang-format",
+  },
+
+  lsp_keymaps = {
+    {
+      server = "clangd",
+      mode = "n",
+      lhs = "<leader>cs",
+      rhs = "<cmd>LspClangdSwitchSourceHeader<CR>",
+    },
     "codelldb",
   },
 }

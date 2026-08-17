@@ -24,7 +24,6 @@ local plugins = {
 
         vim.keymap.set("n", "Z", api.tree.collapse_all, {
           buffer = bufnr,
-          desc = "文件树: 折叠全部",
           nowait = true,
           silent = true,
         })

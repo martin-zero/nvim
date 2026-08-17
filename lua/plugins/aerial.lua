@@ -18,7 +18,6 @@ return {
       {
         "<leader>o",
         "<cmd>AerialToggle!<CR>",
-        desc = "切换代码大纲",
       },
     },
   },
