@@ -1,3 +1,4 @@
+-- 自定义翻译插件
 return {
   {
     "user/translate",

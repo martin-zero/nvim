@@ -1,3 +1,4 @@
+-- 面包屑导航栏
 return {
   {
     "Bekaboo/dropbar.nvim",

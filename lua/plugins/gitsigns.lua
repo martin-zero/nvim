@@ -1,3 +1,4 @@
+-- git扩展功能
 return {
   {
     "lewis6991/gitsigns.nvim",
