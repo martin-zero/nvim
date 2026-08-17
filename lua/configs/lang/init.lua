@@ -1,7 +1,6 @@
-local enabled = {
+local enabled_modules = {
   -- "web",
   "cpp",
-  "csharp",
   "java",
   "lua",
   "rust",
@@ -9,37 +8,36 @@ local enabled = {
 }
 
 local M = {
-  enabled = enabled,
+  enabled = enabled_modules,
   servers = {},
   formatters_by_ft = {},
   mason = {},
   plugins = {},
+  lsp_keymaps = {},
 }
 
-local function extend_list(dst, src)
-  if not src then
-    return
-  end
-
-  for _, item in ipairs(src) do
-    table.insert(dst, item)
+local function append(target, items)
+  for _, item in ipairs(items or {}) do
+    table.insert(target, item)
   end
 end
 
-for _, name in ipairs(enabled) do
+for _, name in ipairs(enabled_modules) do
   local ok, lang = pcall(require, "configs.lang." .. name)
+
   if not ok then
     vim.notify("Failed to load language config: " .. name, vim.log.levels.ERROR)
-  else
-    vim.list_extend(M.servers, lang.servers or {})
-
-    for ft, formatters in pairs(lang.formatters_by_ft or {}) do
-      M.formatters_by_ft[ft] = formatters
-    end
-
-    extend_list(M.mason, lang.mason)
-    extend_list(M.plugins, lang.plugins)
+    return
   end
+
+  for ft, formatters in pairs(lang.formatters_by_ft or {}) do
+    M.formatters_by_ft[ft] = formatters
+  end
+
+  append(M.servers, lang.servers)
+  append(M.mason, lang.mason)
+  append(M.plugins, lang.plugins)
+  append(M.lsp_keymaps, lang.lsp_keymaps)
 end
 
 return M
