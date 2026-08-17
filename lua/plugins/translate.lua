@@ -23,8 +23,16 @@ return {
           text = opts.args ~= "" and opts.args or vim.fn.expand "<cword>"
         end
 
-        local output = vim.fn.system("trans " .. vim.fn.shellescape(text))
-        print(output:gsub("\27%[[0-9;]*[mK]", ""))
+        vim.system({ "trans", text }, { text = true }, function(result)
+          vim.schedule(function()
+            if result.code ~= 0 then
+              vim.notify(result.stderr ~= "" and result.stderr or "Translation failed", vim.log.levels.ERROR)
+              return
+            end
+
+            print(result.stdout:gsub("\27%[[0-9;]*[mK]", ""))
+          end)
+        end)
       end, { nargs = "*", range = true })
     end,
   },
