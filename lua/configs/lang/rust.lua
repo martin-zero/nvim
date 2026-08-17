@@ -14,4 +14,8 @@ return {
   mason = {
     "codelldb",
   },
+
+  dap = {
+    rust = "codelldb",
+  },
 }

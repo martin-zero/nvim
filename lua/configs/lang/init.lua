@@ -14,6 +14,7 @@ local M = {
   mason = {},
   plugins = {},
   lsp_keymaps = {},
+  dap = {},
 }
 
 local function append(target, items)
@@ -38,6 +39,10 @@ for _, name in ipairs(enabled_modules) do
   append(M.mason, lang.mason)
   append(M.plugins, lang.plugins)
   append(M.lsp_keymaps, lang.lsp_keymaps)
+
+  for filetype, adapter in pairs(lang.dap or {}) do
+    M.dap[filetype] = adapter
+  end
 end
 
 return M
