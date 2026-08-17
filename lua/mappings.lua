@@ -1,29 +1,5 @@
 require "nvchad.mappings"
 
--- add yours here
---
--- :T快速翻译
-vim.api.nvim_create_user_command("T", function(opts)
-  local text = ""
-
-  if opts.range == 2 then
-    -- Visual 模式选中的范围
-    local s = vim.fn.getpos "'<"
-    local e = vim.fn.getpos "'>"
-    if s[2] > e[2] or (s[2] == e[2] and s[3] > e[3]) then
-      s, e = e, s
-    end
-    local t = vim.api.nvim_buf_get_text(0, s[2] - 1, s[3] - 1, e[2] - 1, e[3], {})
-    text = table.concat(t, "\n")
-  else
-    -- Normal 模式
-    text = opts.args ~= "" and opts.args or vim.fn.expand "<cword>"
-  end
-
-  local output = vim.fn.system("trans " .. vim.fn.shellescape(text))
-  print(output:gsub("\27%[[0-9;]*[mK]", ""))
-end, { nargs = "*", range = true })
-
 local map = vim.keymap.set
 
 local function remap_if_exists(mode, lhs, desc)
@@ -86,7 +62,6 @@ local chinese_desc = {
     ["<Esc>"] = "清除搜索高亮",
     ["<C-s>"] = "保存文件",
     ["<C-c>"] = "复制整个文件",
-    ["<leader>cs"] = "切换头文件/源文件",
     ["<leader>ds"] = "诊断列表",
     ["<leader>b"] = "新建缓冲区",
     ["<leader>x"] = "关闭缓冲区",
@@ -108,8 +83,7 @@ local chinese_desc = {
   v = {
     ["<leader>/"] = "切换注释",
   },
-  x = {
-  },
+  x = {},
   t = {
     ["<C-x>"] = "退出终端模式",
     ["<A-v>"] = "切换垂直终端",
@@ -155,17 +129,7 @@ end, { desc = "跳转/应用下一个编辑建议" })
 
 -- 快速修复
 map("n", "<leader>ca", vim.lsp.buf.code_action, {
-  desc = "代码操作",
-})
-
-map("n", "<leader>cs", function()
-  if vim.fn.exists ":LspClangdSwitchSourceHeader" == 2 then
-    vim.cmd "LspClangdSwitchSourceHeader"
-  else
-    vim.notify("clangd 未提供头文件/源文件切换命令", vim.log.levels.WARN)
-  end
-end, {
-  desc = "切换头文件/源文件",
+  desc = "快速修复",
 })
 
 map("n", "<S-l>", ":bnext<CR>", { silent = true })
@@ -176,3 +140,6 @@ map("n", "<A-j>", ":m .+1<CR>==")
 map("n", "<A-k>", ":m .-2<CR>==")
 map("v", "<A-j>", ":m '>+1<CR>gv=gv")
 map("v", "<A-k>", ":m '<-2<CR>gv=gv")
+
+-- 退出nvim
+map("n", "<leader>q", ":qa<CR>", { desc = "退出" })
