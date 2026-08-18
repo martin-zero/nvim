@@ -1,5 +1,7 @@
 require "nvchad.mappings"
 
+require("configs.whichkey").setup()
+
 local map = vim.keymap.set
 
 local function move_key(mode, from, to, desc)
@@ -19,8 +21,6 @@ local function move_key(mode, from, to, desc)
   })
   pcall(vim.keymap.del, mode, from)
 end
-
-require("keymaps.which_key").setup()
 
 map("n", ";", ":", { desc = "进入命令模式" })
 map("i", "jk", "<ESC>", { desc = "退出插入模式" })
