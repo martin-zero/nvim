@@ -54,12 +54,12 @@ end, { desc = "跳转/应用下一个编辑建议" })
 
 map("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "代码操作" })
 
-map("n", "<S-l>", ":bnext<CR>", { silent = true })
-map("n", "<S-h>", ":bprevious<CR>", { silent = true })
+map("n", "<S-l>", ":bnext<CR>", { silent = true, desc = "下一个缓冲区" })
+map("n", "<S-h>", ":bprevious<CR>", { silent = true, desc = "上一个缓冲区" })
 
-map("n", "<A-j>", ":m .+1<CR>==")
-map("n", "<A-k>", ":m .-2<CR>==")
-map("v", "<A-j>", ":m '>+1<CR>gv=gv")
-map("v", "<A-k>", ":m '<-2<CR>gv=gv")
+map("n", "<A-j>", ":m .+1<CR>==", { desc = "下移当前行" })
+map("n", "<A-k>", ":m .-2<CR>==", { desc = "上移当前行" })
+map("v", "<A-j>", ":m '>+1<CR>gv=gv", { desc = "下移选区" })
+map("v", "<A-k>", ":m '<-2<CR>gv=gv", { desc = "上移选区" })
 
 map("n", "<leader>q", ":qa<CR>", { desc = "退出 Neovim" })

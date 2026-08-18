@@ -1,79 +1,8 @@
 local M = {}
 
-local descs = {
-  i = {
-    ["<C-b>"] = "移动到行首",
-    ["<C-e>"] = "移动到行尾",
-    ["<C-h>"] = "左移光标",
-    ["<C-l>"] = "右移光标",
-    ["<C-j>"] = "下移光标",
-    ["<C-k>"] = "上移光标",
-  },
-  n = {
-    ["<C-h>"] = "切到左侧窗口",
-    ["<C-l>"] = "切到右侧窗口",
-    ["<C-j>"] = "切到下方窗口",
-    ["<C-k>"] = "切到上方窗口",
-    ["<Esc>"] = "清除搜索高亮",
-    ["<C-s>"] = "保存文件",
-    ["<C-c>"] = "复制整个文件",
-    ["<leader>ds"] = "诊断列表",
-    ["<leader>b"] = "新建缓冲区",
-    ["<leader>x"] = "关闭缓冲区",
-    ["<leader>/"] = "切换注释",
-    ["<C-n>"] = "切换文件树",
-    ["<leader>e"] = "聚焦文件树",
-    ["<leader>fw"] = "全文搜索",
-    ["<leader>fb"] = "查找缓冲区",
-    ["<leader>ma"] = "查找标记",
-    ["<leader>fo"] = "查找最近文件",
-    ["<leader>fz"] = "在当前缓冲区搜索",
-    ["<leader>gt"] = "查看 Git 状态",
-    ["<leader>ff"] = "查找文件",
-    ["<leader>fa"] = "查找所有文件",
-    ["<A-v>"] = "切换垂直终端",
-    ["<A-h>"] = "切换水平终端",
-    ["<A-i>"] = "切换浮动终端",
-  },
-  v = {
-    ["<leader>/"] = "切换注释",
-  },
-  t = {
-    ["<C-x>"] = "退出终端模式",
-    ["<A-v>"] = "切换垂直终端",
-    ["<A-h>"] = "切换水平终端",
-    ["<A-i>"] = "切换浮动终端",
-  },
-}
-
 local groups = {
   { "<C-w>", group = "窗口" },
-  { "<C-w>h", desc = "切到左侧窗口" },
-  { "<C-w>j", desc = "切到下方窗口" },
-  { "<C-w>k", desc = "切到上方窗口" },
-  { "<C-w>l", desc = "切到右侧窗口" },
-  { "<C-w>H", desc = "移动窗口到最左侧" },
-  { "<C-w>J", desc = "移动窗口到最下方" },
-  { "<C-w>K", desc = "移动窗口到最上方" },
-  { "<C-w>L", desc = "移动窗口到最右侧" },
-  { "<C-w>s", desc = "水平分割窗口" },
-  { "<C-w>v", desc = "垂直分割窗口" },
-  { "<C-w>c", desc = "关闭窗口" },
-  { "<C-w>q", desc = "退出窗口" },
-  { "<C-w>o", desc = "只保留当前窗口" },
-  { "<C-w>T", desc = "移到新标签页" },
-  { "<C-w>x", desc = "与下一个窗口交换" },
-  { "<C-w>d", desc = "显示光标下诊断" },
-  { "<C-w><C-d>", desc = "显示光标下诊断" },
-  { "<C-w>=", desc = "等分窗口大小" },
-  { "<C-w>_", desc = "最大化窗口高度" },
-  { "<C-w>|", desc = "最大化窗口宽度" },
-  { "<C-w>+", desc = "增加窗口高度" },
-  { "<C-w>-", desc = "减少窗口高度" },
-  { "<C-w>>", desc = "增加窗口宽度" },
-  { "<C-w><", desc = "减少窗口宽度" },
-  { "<C-w>w", desc = "切到下一个窗口" },
-  { "<C-w>W", desc = "切到上一个窗口" },
+  { "g", group = "跳转" },
   { "<leader>a", group = "AI 助手" },
   { "<leader>c", group = "代码操作" },
   { "<leader>d", group = "调试/诊断" },
@@ -87,35 +16,269 @@ local groups = {
   { "<leader>w", group = "工作区" },
 }
 
-local function apply_desc(mode, lhs, desc)
-  local mapping = vim.fn.maparg(lhs, mode, false, true)
+local labels = {
+  -- which-key presets: operators
+  ["Run program"] = "运行程序",
+  ["Indent left"] = "减少缩进",
+  ["Indent right"] = "增加缩进",
+  ["Visual Line"] = "行可视模式",
+  ["Change"] = "修改",
+  ["Delete"] = "删除",
+  ["Uppercase"] = "转为大写",
+  ["Lowercase"] = "转为小写",
+  ["Toggle case"] = "切换大小写",
+  ["Format"] = "格式化",
+  ["Replace"] = "替换",
+  ["Visual"] = "可视模式",
+  ["Yank"] = "复制",
+  ["Create fold"] = "创建折叠",
 
-  if vim.tbl_isempty(mapping) then
+  -- which-key presets: motions
+  ["End of line"] = "行尾",
+  ["Matching (){}[]"] = "匹配括号",
+  ["Start of line"] = "行首",
+  ["Move to prev char"] = "跳到上一个字符",
+  ["Last line"] = "最后一行",
+  ["Move before prev char"] = "跳到上一个字符前",
+  ["Start of line (non ws)"] = "行首非空白字符",
+  ["Prev word"] = "上一个词",
+  ["Next end of word"] = "下一个词尾",
+  ["Move to next char"] = "跳到下一个字符",
+  ["Prev end of word"] = "上一个词尾",
+  ["First line"] = "第一行",
+  ["Left"] = "左移",
+  ["Down"] = "下移",
+  ["Up"] = "上移",
+  ["Right"] = "右移",
+  ["Move before next char"] = "跳到下一个字符前",
+  ["Next word"] = "下一个词",
+  ["Prev empty line"] = "上一个空行",
+  ["Next empty line"] = "下一个空行",
+  ["Next ftFT"] = "下一个 f/t/F/T",
+  ["Prev ftFT"] = "上一个 f/t/F/T",
+  ["Search forward"] = "向后搜索",
+  ["Search backward"] = "向前搜索",
+  ["Prev WORD"] = "上一个大词",
+  ["Next end of WORD"] = "下一个大词尾",
+  ["Next WORD"] = "下一个大词",
+
+  -- which-key presets: text objects
+  ["around"] = "外侧文本对象",
+  ["inside"] = "内侧文本对象",
+  ['" string'] = "双引号字符串",
+  ["' string"] = "单引号字符串",
+  ["[(]) block"] = "圆括号块",
+  ["<> block"] = "尖括号块",
+  ["[{]} block"] = "花括号块",
+  ["WORD with ws"] = "含空白的大词",
+  ["[] block"] = "方括号块",
+  ["` string"] = "反引号字符串",
+  ["paragraph"] = "段落",
+  ["sentence"] = "句子",
+  ["tag block"] = "标签块",
+  ["word with ws"] = "含空白的词",
+  ['inner " string'] = "双引号字符串内部",
+  ["inner ' string"] = "单引号字符串内部",
+  ["inner [(])"] = "圆括号内部",
+  ["inner <>"] = "尖括号内部",
+  ["inner [{]}"] = "花括号内部",
+  ["inner WORD"] = "大词内部",
+  ["inner []"] = "方括号内部",
+  ["inner ` string"] = "反引号字符串内部",
+  ["inner paragraph"] = "段落内部",
+  ["inner sentence"] = "句子内部",
+  ["inner tag block"] = "标签块内部",
+  ["inner word"] = "词内部",
+
+  -- which-key presets: windows
+  ["window"] = "窗口",
+  ["Increase height"] = "增加窗口高度",
+  ["Decrease height"] = "减少窗口高度",
+  ["Decrease width"] = "减少窗口宽度",
+  ["Equally high and wide"] = "等分窗口大小",
+  ["Increase width"] = "增加窗口宽度",
+  ["Break out into a new tab"] = "移到新标签页",
+  ["Max out the height"] = "最大化窗口高度",
+  ["Go to the left window"] = "切到左侧窗口",
+  ["Go to the down window"] = "切到下方窗口",
+  ["Go to the up window"] = "切到上方窗口",
+  ["Go to the right window"] = "切到右侧窗口",
+  ["Close all other windows"] = "只保留当前窗口",
+  ["Quit a window"] = "退出窗口",
+  ["Split window"] = "水平分割窗口",
+  ["Split window vertically"] = "垂直分割窗口",
+  ["Switch windows"] = "切换窗口",
+  ["Swap current with next"] = "与下一个窗口交换",
+  ["Max out the width"] = "最大化窗口宽度",
+  ["Move window to far left"] = "移动窗口到最左侧",
+  ["Move window to far bottom"] = "移动窗口到最下方",
+  ["Move window to far top"] = "移动窗口到最上方",
+  ["Move window to far right"] = "移动窗口到最右侧",
+  ["Show diagnostics under the cursor"] = "显示光标下诊断",
+
+  -- which-key presets: z
+  ["Top this line"] = "当前行置顶",
+  ["Spelling suggestions"] = "拼写建议",
+  ["Toggle all folds under cursor"] = "切换光标下所有折叠",
+  ["Close all folds under cursor"] = "关闭光标下所有折叠",
+  ["Delete all folds under cursor"] = "删除光标下所有折叠",
+  ["Delete all folds in file"] = "删除文件中所有折叠",
+  ["Half screen to the left"] = "向左滚动半屏",
+  ["Half screen to the right"] = "向右滚动半屏",
+  ["Close all folds"] = "关闭所有折叠",
+  ["Open all folds under cursor"] = "打开光标下所有折叠",
+  ["Open all folds"] = "打开所有折叠",
+  ["Toggle fold under cursor"] = "切换光标下折叠",
+  ["Bottom this line"] = "当前行置底",
+  ["Close fold under cursor"] = "关闭光标下折叠",
+  ["Delete fold under cursor"] = "删除光标下折叠",
+  ["Right this line"] = "当前行靠右",
+  ["Add word to spell list"] = "加入拼写词表",
+  ["Toggle folding"] = "切换折叠",
+  ["Fold more"] = "增加折叠",
+  ["Open fold under cursor"] = "打开光标下折叠",
+  ["Fold less"] = "减少折叠",
+  ["Left this line"] = "当前行靠左",
+  ["Show cursor line"] = "显示光标行",
+  ["Mark word as bad/misspelling"] = "标记为拼写错误",
+  ["Update folds"] = "更新折叠",
+  ["Center this line"] = "当前行居中",
+
+  -- which-key presets: navigation
+  ["Home line of window (top)"] = "窗口顶部行",
+  ["Last line of window"] = "窗口底部行",
+  ["Middle line of window"] = "窗口中间行",
+  ["Previous unmatched group"] = "上一个未匹配分组",
+  ["Previous ("] = "上一个 (",
+  ["Previous <"] = "上一个 <",
+  ["Previous method end"] = "上一个方法结尾",
+  ["Previous method start"] = "上一个方法开头",
+  ["Previous misspelled word"] = "上一个拼写错误",
+  ["Previous {"] = "上一个 {",
+  ["Next unmatched group"] = "下一个未匹配分组",
+  ["Next ("] = "下一个 (",
+  ["Next <"] = "下一个 <",
+  ["Next method end"] = "下一个方法结尾",
+  ["Next method start"] = "下一个方法开头",
+  ["Next misspelled word"] = "下一个拼写错误",
+  ["Next {"] = "下一个 {",
+
+  -- which-key presets: g
+  ["Cycle backwards through results"] = "在结果中反向切换",
+  ["Go to [count] newer position in change list"] = "跳到更新的修改位置",
+  ["Go to [count] older position in change list"] = "跳到更旧的修改位置",
+  ["Search backwards and select"] = "向前搜索并选中",
+  ["Go to previous tab page"] = "上一个标签页",
+  ["Go to file under cursor"] = "跳到光标下文件",
+  ["Go to last insert"] = "跳到上次插入位置",
+  ["Search forwards and select"] = "向后搜索并选中",
+  ["Go to next tab page"] = "下一个标签页",
+  ["Last visual selection"] = "上次可视选择",
+  ["Open file with system app"] = "用系统程序打开文件",
+  ["Opens filepath or URI under cursor with the system handler (file explorer, web browser, …)"] = "用系统程序打开光标下文件或链接",
+
+  -- NvChad defaults
+  ["move beginning of line"] = "移动到行首",
+  ["move end of line"] = "移动到行尾",
+  ["move left"] = "左移光标",
+  ["move right"] = "右移光标",
+  ["move down"] = "下移光标",
+  ["move up"] = "上移光标",
+  ["switch window left"] = "切到左侧窗口",
+  ["switch window right"] = "切到右侧窗口",
+  ["switch window down"] = "切到下方窗口",
+  ["switch window up"] = "切到上方窗口",
+  ["general clear highlights"] = "清除搜索高亮",
+  ["general save file"] = "保存文件",
+  ["general copy whole file"] = "复制整个文件",
+  ["toggle line number"] = "切换行号",
+  ["toggle relative number"] = "切换相对行号",
+  ["toggle nvcheatsheet"] = "打开快捷键速查",
+  ["general format file"] = "格式化文件",
+  ["LSP diagnostic loclist"] = "诊断列表",
+  ["buffer new"] = "新建缓冲区",
+  ["buffer goto next"] = "下一个缓冲区",
+  ["buffer goto prev"] = "上一个缓冲区",
+  ["buffer close"] = "关闭缓冲区",
+  ["toggle comment"] = "切换注释",
+  ["nvimtree toggle window"] = "切换文件树",
+  ["nvimtree focus window"] = "聚焦文件树",
+  ["telescope live grep"] = "全文搜索",
+  ["telescope find buffers"] = "查找缓冲区",
+  ["telescope help page"] = "查找帮助",
+  ["telescope find marks"] = "查找标记",
+  ["telescope find oldfiles"] = "查找最近文件",
+  ["telescope find in current buffer"] = "在当前缓冲区搜索",
+  ["telescope git commits"] = "查找 Git 提交",
+  ["telescope git status"] = "查看 Git 状态",
+  ["telescope pick hidden term"] = "选择隐藏终端",
+  ["telescope nvchad themes"] = "切换主题",
+  ["telescope find files"] = "查找文件",
+  ["telescope find all files"] = "查找所有文件",
+  ["terminal escape terminal mode"] = "退出终端模式",
+  ["terminal new horizontal term"] = "新建水平终端",
+  ["terminal new vertical term"] = "新建垂直终端",
+  ["terminal toggleable vertical term"] = "切换垂直终端",
+  ["terminal toggleable horizontal term"] = "切换水平终端",
+  ["terminal toggle floating term"] = "切换浮动终端",
+  ["whichkey all keymaps"] = "显示全部快捷键",
+  ["whichkey query lookup"] = "查询快捷键",
+
+  -- Neovim LSP defaults
+  ["LSP Go to definition"] = "跳到定义",
+  ["LSP Go to declaration"] = "跳到声明",
+  ["LSP Add workspace folder"] = "添加工作区目录",
+  ["LSP Remove workspace folder"] = "移除工作区目录",
+  ["LSP List workspace folders"] = "列出工作区目录",
+  ["LSP Go to type definition"] = "跳到类型定义",
+  ["LSP NvRenamer"] = "重命名",
+  ["vim.lsp.buf.code_action()"] = "代码操作",
+  ["vim.lsp.buf.implementation()"] = "跳到实现",
+  ["vim.lsp.buf.rename()"] = "重命名",
+  ["vim.lsp.buf.references()"] = "查找引用",
+  ["vim.lsp.buf.type_definition()"] = "跳到类型定义",
+  ["vim.lsp.codelens.run()"] = "运行 CodeLens",
+  ["vim.lsp.buf.document_symbol()"] = "文档符号",
+}
+
+local function translate_desc(desc)
+  return labels[desc] or desc
+end
+
+local function setup_replace()
+  local ok, config = pcall(require, "which-key.config")
+
+  if ok and config.options and config.options.replace then
+    table.insert(config.options.replace.desc, 1, translate_desc)
     return
   end
 
-  vim.keymap.set(mode, lhs, mapping.callback or mapping.rhs, {
-    desc = desc,
-    remap = mapping.noremap == 0,
-    silent = mapping.silent == 1,
-    expr = mapping.expr == 1,
-    nowait = mapping.nowait == 1,
-    script = mapping.script == 1,
-  })
+  require("which-key").setup {
+    replace = {
+      desc = {
+        translate_desc,
+        { "<Plug>%(?(.*)%)?", "%1" },
+        { "^%+", "" },
+        { "<[cC]md>", "" },
+        { "<[cC][rR]>", "" },
+        { "<[sS]ilent>", "" },
+        { "^lua%s+", "" },
+        { "^call%s+", "" },
+        { "^:%s*", "" },
+      },
+    },
+  }
 end
 
 function M.setup()
-  for mode, maps in pairs(descs) do
-    for lhs, desc in pairs(maps) do
-      apply_desc(mode, lhs, desc)
-    end
-  end
-
   local ok, wk = pcall(require, "which-key")
 
-  if ok then
-    wk.add(groups)
+  if not ok then
+    return
   end
+
+  setup_replace()
+  wk.add(groups)
 end
 
 return M
