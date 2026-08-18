@@ -1,6 +1,17 @@
 local dap = require "dap"
 local lang = require "configs.lang"
 
+vim.api.nvim_set_hl(0, "DapBreakpoint", { fg = "#db4b4b" })
+vim.api.nvim_set_hl(0, "DapBreakpointCondition", { fg = "#e0af68" })
+vim.api.nvim_set_hl(0, "DapLogPoint", { fg = "#61afef" })
+vim.api.nvim_set_hl(0, "DapStopped", { fg = "#98c379" })
+vim.api.nvim_set_hl(0, "DapStoppedLine", { bg = "#2a2e36" })
+
+vim.fn.sign_define("DapBreakpoint", { text = "", texthl = "DapBreakpoint" })
+vim.fn.sign_define("DapBreakpointCondition", { text = "", texthl = "DapBreakpointCondition" })
+vim.fn.sign_define("DapLogPoint", { text = "", texthl = "DapLogPoint" })
+vim.fn.sign_define("DapStopped", { text = "", texthl = "DapStopped", linehl = "DapStoppedLine" })
+
 local adapters = {
   codelldb = function()
     local mason = vim.fn.stdpath "data" .. "/mason/packages"
