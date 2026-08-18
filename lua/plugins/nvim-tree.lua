@@ -11,6 +11,7 @@ return {
           buffer = bufnr,
           nowait = true,
           silent = true,
+          desc = "折叠全部目录",
         })
       end
     end,

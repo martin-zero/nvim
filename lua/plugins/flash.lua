@@ -12,6 +12,7 @@ return {
         function()
           require("flash").jump()
         end,
+        desc = "快速跳转",
       },
       {
         "S",
@@ -19,6 +20,7 @@ return {
         function()
           require("flash").treesitter()
         end,
+        desc = "语法树跳转",
       },
       {
         "r",
@@ -26,6 +28,7 @@ return {
         function()
           require("flash").remote()
         end,
+        desc = "远程跳转",
       },
       {
         "R",
@@ -33,6 +36,7 @@ return {
         function()
           require("flash").treesitter_search()
         end,
+        desc = "语法树搜索",
       },
       {
         "<c-s>",
@@ -40,6 +44,7 @@ return {
         function()
           require("flash").toggle()
         end,
+        desc = "切换 Flash 搜索",
       },
     },
   },

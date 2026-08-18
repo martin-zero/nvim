@@ -11,9 +11,9 @@ return {
       },
     },
     keys = {
-      { "<leader>gb", "<cmd>Gitsigns blame<CR>" },
-      { "<leader>gd", "<cmd>Gitsigns diffthis<CR>" },
-      { "<leader>gp", "<cmd>Gitsigns preview_hunk<CR>" },
+      { "<leader>gb", "<cmd>Gitsigns blame<CR>", desc = "文件提交信息" },
+      { "<leader>gd", "<cmd>Gitsigns diffthis<CR>", desc = "比较当前文件" },
+      { "<leader>gp", "<cmd>Gitsigns preview_hunk<CR>", desc = "预览修改块" },
     },
   },
 }

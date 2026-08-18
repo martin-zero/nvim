@@ -18,5 +18,7 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+-- 剪切板
 vim.opt.clipboard = "unnamedplus"
+
 vim.o.scrolloff = 8
