@@ -23,7 +23,7 @@ return {
           text = opts.args ~= "" and opts.args or vim.fn.expand "<cword>"
         end
 
-        vim.system({ "trans", text }, { text = true }, function(result)
+        vim.system({ "trans", "--", text }, { text = true }, function(result)
           vim.schedule(function()
             if result.code ~= 0 then
               vim.notify(result.stderr ~= "" and result.stderr or "Translation failed", vim.log.levels.ERROR)
