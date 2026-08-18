@@ -6,7 +6,7 @@ require "nvchad.options"
 -- o.cursorlineopt ='both' -- to enable cursorline!
 
 -- 相对行号
--- vim.o.relativenumber = true
+vim.o.relativenumber = true
 
 -- 关闭注释自动续行
 vim.api.nvim_create_autocmd("FileType", {
