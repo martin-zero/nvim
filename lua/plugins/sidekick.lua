@@ -2,6 +2,7 @@
 return {
   {
     "folke/sidekick.nvim",
+    enabled = false,
     lazy = false,
     opts = {
       -- add any options here

@@ -239,6 +239,20 @@ local labels = {
   ["vim.lsp.buf.type_definition()"] = "跳到类型定义",
   ["vim.lsp.codelens.run()"] = "运行 CodeLens",
   ["vim.lsp.buf.document_symbol()"] = "文档符号",
+
+  -- git-conflict.nvim
+  ["Git Conflict: Choose Ours"] = "采用上面",
+  ["Git Conflict: Choose Theirs"] = "采用下面",
+  ["Git Conflict: Choose Both"] = "两边都要",
+  ["Git Conflict: Choose None"] = "两边都不要",
+  ["Git Conflict: Previous Conflict"] = "上一个冲突",
+  ["Git Conflict: Next Conflict"] = "下一个冲突",
+  ["Choose Ours"] = "采用上面",
+  ["Choose Theirs"] = "采用下面",
+  ["Choose Both"] = "两边都要",
+  ["Choose None"] = "两边都不要",
+  ["Move to previous conflict"] = "上一个冲突",
+  ["Move to next conflict"] = "下一个冲突",
 }
 
 local function translate_desc(desc)
