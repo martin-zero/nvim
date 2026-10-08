@@ -23,9 +23,4 @@ return {
       desc = "切换头文件/源文件",
     },
   },
-
-  dap = {
-    c = "codelldb",
-    cpp = "codelldb",
-  },
 }
